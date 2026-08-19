@@ -1,4 +1,4 @@
-# <img width="50" height="50" align="absmiddle" alt="logo" src="custom_components/greenflux/brand/icon.png" /> GreenFlux for Home Assistant
+# <img width="50" height="50" align="absmiddle" alt="logo" src="https://raw.githubusercontent.com/ludero-git/ha-greenflux/main/custom_components/greenflux/brand/icon.png" /> GreenFlux for Home Assistant
 
 Home Assistant custom integration for GreenFlux CPO platforms.
 
