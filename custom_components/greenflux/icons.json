@@ -1,0 +1,19 @@
+{
+    "services": {
+        "start_session": {
+            "service": "mdi:ev-station"
+        },
+        "stop_session": {
+            "service": "mdi:stop-circle-outline"
+        },
+        "unlock_connector": {
+            "service": "mdi:lock-open-variant-outline"
+        },
+        "reset": {
+            "service": "mdi:restart"
+        },
+        "command_status": {
+            "service": "mdi:list-status"
+        }
+    }
+}

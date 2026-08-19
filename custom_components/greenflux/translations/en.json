@@ -1,0 +1,234 @@
+{
+    "config": {
+        "abort": {
+            "reauth_successful": "Re-authentication successful."
+        },
+        "error": {
+            "cannot_connect": "Could not connect to the GreenFlux API.",
+            "invalid_auth": "The GreenFlux API token was rejected.",
+            "invalid_url": "Enter a valid GreenFlux platform URL.",
+            "rate_limited": "GreenFlux rate limited the request. Try again later."
+        },
+        "step": {
+            "reauth_confirm": {
+                "data": {
+                    "api_token": "GreenFlux API token"
+                },
+                "description": "Enter a new API token for this GreenFlux platform.",
+                "title": "Re-authenticate GreenFlux"
+            },
+            "user": {
+                "data": {
+                    "api_token": "GreenFlux API token",
+                    "api_url": "GreenFlux API URL",
+                    "auto_create": "Automatically add all chargers"
+                },
+                "description": "Connect to a GreenFlux CPO platform. Automatic charger creation is disabled by default. Enabling it reads the complete charger list during setup and may consume more API capacity on large platforms.",
+                "title": "Connect to GreenFlux"
+            }
+        }
+    },
+    "config_subentries": {
+        "charger": {
+            "error": {
+                "already_configured": "This charger is already configured under this platform.",
+                "cannot_connect": "Could not retrieve the charger from GreenFlux.",
+                "charger_not_found": "GreenFlux could not find this charger ID.",
+                "invalid_auth": "The GreenFlux API token was rejected.",
+                "rate_limited": "GreenFlux rate limited the request. Try again later."
+            },
+            "step": {
+                "user": {
+                    "data": {
+                        "charger_id": "GreenFlux Charger ID"
+                    },
+                    "description": "Add a charger to this GreenFlux platform. This performs one real-time lookup to validate the charger ID.",
+                    "title": "Add GreenFlux charger"
+                }
+            },
+            "title": "Charger"
+        }
+    },
+    "entity": {
+        "button": {
+            "reset": {
+                "name": "Reset"
+            },
+            "stop_session": {
+                "name": "Stop session"
+            },
+            "unlock_connector": {
+                "name": "Unlock connector"
+            }
+        },
+        "sensor": {
+            "amperage": {
+                "name": "Amperage"
+            },
+            "firmware_version": {
+                "name": "Firmware version"
+            },
+            "ip_address": {
+                "name": "IP address"
+            },
+            "manufacturer": {
+                "name": "Manufacturer"
+            },
+            "max_power": {
+                "name": "Max power"
+            },
+            "model": {
+                "name": "Model"
+            },
+            "power_type": {
+                "name": "Power type"
+            },
+            "serial_number": {
+                "name": "Serial number"
+            },
+            "session_id": {
+                "name": "Session ID"
+            },
+            "status": {
+                "name": "Status",
+                "state": {
+                    "AVAILABLE": "Available",
+                    "BLOCKED": "Blocked",
+                    "CHARGING": "Charging",
+                    "INOPERATIVE": "Inoperative",
+                    "OUTOFORDER": "Out of order",
+                    "PLANNED": "Planned",
+                    "REMOVED": "Removed",
+                    "RESERVED": "Reserved",
+                    "UNKNOWN": "Unknown"
+                }
+            },
+            "tag_id": {
+                "name": "Tag ID"
+            },
+            "transaction_id": {
+                "name": "Transaction ID"
+            },
+            "voltage": {
+                "name": "Voltage"
+            }
+        }
+    },
+    "services": {
+        "command_status": {
+            "description": "Retrieve the charge station response for a previously accepted remote command.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "GreenFlux platform config entry.",
+                    "name": "Platform"
+                },
+                "evse_uid": {
+                    "description": "GreenFlux EVSE UID used by the remote command response endpoint.",
+                    "name": "EVSE UID"
+                },
+                "notification_id": {
+                    "description": "Charge station notification ID returned by a remote command.",
+                    "name": "Notification ID"
+                }
+            },
+            "name": "Get command status"
+        },
+        "reset": {
+            "description": "Reset a GreenFlux charge station. The Reset button uses Soft and Immediate.",
+            "fields": {
+                "charger_id": {
+                    "description": "GreenFlux charge station ID.",
+                    "name": "Charger ID"
+                },
+                "config_entry_id": {
+                    "description": "GreenFlux platform config entry.",
+                    "name": "Platform"
+                },
+                "evse_uid": {
+                    "description": "Optional EVSE UID. GreenFlux accepts charge_station_id or evse_uid for reset targeting.",
+                    "name": "EVSE UID"
+                },
+                "scheduled": {
+                    "description": "Reset immediately or when the station becomes idle.",
+                    "name": "Schedule"
+                },
+                "type": {
+                    "description": "Hard or Soft reset.",
+                    "name": "Reset type"
+                }
+            },
+            "name": "Reset"
+        },
+        "start_session": {
+            "description": "Start a session using a token UID or auth ID. At least one token field is required.",
+            "fields": {
+                "auth_id": {
+                    "description": "Optional GreenFlux token auth ID.",
+                    "name": "Auth ID"
+                },
+                "charger_id": {
+                    "description": "GreenFlux charge station ID.",
+                    "name": "Charger ID"
+                },
+                "config_entry_id": {
+                    "description": "GreenFlux platform config entry.",
+                    "name": "Platform"
+                },
+                "connector_id": {
+                    "description": "Optional connector ID.",
+                    "name": "Connector ID"
+                },
+                "evse_uid": {
+                    "description": "GreenFlux EVSE UID.",
+                    "name": "EVSE UID"
+                },
+                "location_id": {
+                    "description": "GreenFlux location ID.",
+                    "name": "Location ID"
+                },
+                "token_uid": {
+                    "description": "Optional GreenFlux token UID or RFID tag ID.",
+                    "name": "Token UID"
+                }
+            },
+            "name": "Start session"
+        },
+        "stop_session": {
+            "description": "Stop a charging session using the GreenFlux session ID.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "GreenFlux platform config entry.",
+                    "name": "Platform"
+                },
+                "session_id": {
+                    "description": "GreenFlux session ID, such as an NLGFX session ID from MeterValues or Session Push.",
+                    "name": "Session ID"
+                }
+            },
+            "name": "Stop session"
+        },
+        "unlock_connector": {
+            "description": "Unlock a connector through the GreenFlux Remote Commands API.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "GreenFlux platform config entry.",
+                    "name": "Platform"
+                },
+                "connector_id": {
+                    "description": "Connector ID.",
+                    "name": "Connector ID"
+                },
+                "evse_uid": {
+                    "description": "GreenFlux EVSE UID.",
+                    "name": "EVSE UID"
+                },
+                "location_id": {
+                    "description": "GreenFlux location ID.",
+                    "name": "Location ID"
+                }
+            },
+            "name": "Unlock connector"
+        }
+    },
+    "title": "GreenFlux"
+}

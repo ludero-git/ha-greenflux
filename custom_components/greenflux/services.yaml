@@ -1,0 +1,107 @@
+start_session:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: greenflux
+    charger_id:
+      required: true
+      selector:
+        text:
+    location_id:
+      required: true
+      selector:
+        text:
+    evse_uid:
+      required: true
+      selector:
+        text:
+    connector_id:
+      required: false
+      selector:
+        text:
+    token_uid:
+      required: false
+      selector:
+        text:
+    auth_id:
+      required: false
+      selector:
+        text:
+stop_session:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: greenflux
+    session_id:
+      required: true
+      selector:
+        text:
+unlock_connector:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: greenflux
+    location_id:
+      required: true
+      selector:
+        text:
+    evse_uid:
+      required: true
+      selector:
+        text:
+    connector_id:
+      required: true
+      selector:
+        text:
+reset:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: greenflux
+    charger_id:
+      required: true
+      selector:
+        text:
+    evse_uid:
+      required: false
+      selector:
+        text:
+    type:
+      required: false
+      default: Soft
+      selector:
+        select:
+          options:
+            - Hard
+            - Soft
+    scheduled:
+      required: false
+      default: Immediate
+      selector:
+        select:
+          options:
+            - Immediate
+            - OnIdle
+command_status:
+  fields:
+    config_entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: greenflux
+    evse_uid:
+      required: true
+      selector:
+        text:
+    notification_id:
+      required: true
+      selector:
+        text:
