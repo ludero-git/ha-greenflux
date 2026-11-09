@@ -46,7 +46,11 @@
                     "title": "Add GreenFlux charger"
                 }
             },
-            "title": "Charger"
+            "title": "Charger",
+            "entry_type": "Charger",
+            "initiate_flow": {
+                "user": "Add charger"
+            }
         }
     },
     "entity": {
