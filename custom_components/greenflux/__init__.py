@@ -184,12 +184,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreenFluxConfigEntry) ->
     station_snapshot = pop_station_snapshot(
         hass, entry.data[CONF_API_URL], entry.data[CONF_API_TOKEN]
     )
-    if station_snapshot is None:
+    if not await station_coordinator.async_restore_cache(station_snapshot):
         await station_coordinator.async_config_entry_first_refresh()
-    else:
-        station_coordinator.async_set_updated_data(
-            station_coordinator.normalize_snapshot(station_snapshot)
-        )
 
     # Notifications are optional; initialize empty state and let the coordinator poll after setup.
     notification_coordinator.async_set_updated_data(NotificationData())
