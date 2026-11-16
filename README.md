@@ -35,7 +35,7 @@ Automatic charger creation is disabled by default because large GreenFlux platfo
 
 The integration avoids per-charger and per-socket polling.
 
-* All charge stations, including newly added stations, are fetched once per hour using the bulk [Charge Stations endpoint](https://developer.greenflux.com/reference/chargestations_getallchargestations).
+* Charge stations are cached locally and synchronized hourly using the bulk [Charge Stations endpoint](https://developer.greenflux.com/reference/chargestations_getallchargestations) with `date_from` to fetch only changes, minimizing API requests during updates, reloads, and restarts.
 * Charge station notifications are fetched once per minute using a single bulk [Charge Station Notifications request](https://developer.greenflux.com/reference/chargestationnotifications_getchargestationnotifications) per GreenFlux platform.
 * MeterValues are fetched once per minute using a single bulk request per GreenFlux platform.
 * Notification and MeterValues responses are filtered locally for configured chargers and sockets.
