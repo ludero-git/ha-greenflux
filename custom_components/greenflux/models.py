@@ -71,11 +71,16 @@ class SocketRuntimeState:
     updated_at: datetime | None = None
 
 
-def normalize_station(raw: Mapping[str, Any]) -> GreenFluxStation:
-    """Normalize a charge station object without assuming casing conventions."""
-    charger_id = _text(
+def station_id(raw: Mapping[str, Any]) -> str | None:
+    """Read the station ID without normalizing its connectors."""
+    return _text(
         _pick(raw, "charge_station_id", "chargeStationId", "chargestation_id", "id")
     )
+
+
+def normalize_station(raw: Mapping[str, Any]) -> GreenFluxStation:
+    """Normalize a charge station object without assuming casing conventions."""
+    charger_id = station_id(raw)
     if not charger_id:
         raise ValueError("Charge station object does not contain an ID")
 

@@ -41,7 +41,7 @@ from .const import (
     DOMAIN,
     SUBENTRY_TYPE_CHARGER,
 )
-from .models import normalize_station
+from .models import normalize_station, station_id
 from .naming import charger_name, charger_prefix
 from .setup_cache import store_station_snapshot
 
@@ -111,19 +111,16 @@ class GreenFluxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if user_input[CONF_AUTO_CREATE]:
                     seen: set[str] = set()
                     for raw in raw_stations:
-                        try:
-                            station = normalize_station(raw)
-                        except ValueError:
+                        charger_id = station_id(raw)
+                        if not charger_id or charger_id in seen:
                             continue
-                        if station.charger_id in seen:
-                            continue
-                        seen.add(station.charger_id)
+                        seen.add(charger_id)
                         subentries.append(
                             ConfigSubentryData(
-                                data={CONF_CHARGER_ID: station.charger_id},
+                                data={CONF_CHARGER_ID: charger_id},
                                 subentry_type=SUBENTRY_TYPE_CHARGER,
-                                title=charger_name(platform_number, station.charger_id),
-                                unique_id=charger_prefix(platform_number, station.charger_id),
+                                title=charger_name(platform_number, charger_id),
+                                unique_id=charger_prefix(platform_number, charger_id),
                             )
                         )
                 token = user_input[CONF_API_TOKEN].strip()
@@ -237,6 +234,12 @@ class GreenFluxChargerSubentryFlow(ConfigSubentryFlow):
                 except ValueError:
                     errors["base"] = "charger_not_found"
                 else:
+                    store_station_snapshot(
+                        self.hass,
+                        config_entry.data[CONF_API_URL],
+                        config_entry.data[CONF_API_TOKEN],
+                        [raw_station],
+                    )
                     platform_number = int(
                         config_entry.data.get(CONF_PLATFORM_NUMBER, 1)
                     )

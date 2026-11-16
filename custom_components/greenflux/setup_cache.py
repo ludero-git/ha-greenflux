@@ -1,4 +1,4 @@
-"""Short-lived setup cache used to avoid duplicate GreenFlux bulk reads."""
+"""Temporary cache for GreenFlux station data."""
 
 from __future__ import annotations
 
@@ -10,10 +10,9 @@ from homeassistant.core import HomeAssistant
 DATA_SETUP_CACHE = "greenflux_setup_station_cache"
 
 
-def _key(api_url: str, token: str) -> str:
-    """Build a non-secret cache key for one platform credential pair."""
-    value = f"{api_url}\0{token}".encode()
-    return sha256(value).hexdigest()
+def cache_key(api_url: str, token: str) -> str:
+    """Build a cache key for the API credentials."""
+    return sha256(f"{api_url}\0{token}".encode()).hexdigest()
 
 
 def store_station_snapshot(
@@ -22,9 +21,9 @@ def store_station_snapshot(
     token: str,
     stations: list[dict[str, Any]],
 ) -> None:
-    """Store station data fetched by an auto-create config flow."""
+    """Store station data already fetched during a config flow."""
     cache = hass.data.setdefault(DATA_SETUP_CACHE, {})
-    cache[_key(api_url, token)] = stations
+    cache.setdefault(cache_key(api_url, token), []).extend(stations)
 
 
 def pop_station_snapshot(
@@ -32,11 +31,12 @@ def pop_station_snapshot(
     api_url: str,
     token: str,
 ) -> list[dict[str, Any]] | None:
-    """Consume a station snapshot when the new config entry is set up."""
+    """Consume cached station data during integration setup."""
     cache = hass.data.get(DATA_SETUP_CACHE)
     if not isinstance(cache, dict):
         return None
-    snapshot = cache.pop(_key(api_url, token), None)
+
+    snapshot = cache.pop(cache_key(api_url, token), None)
     if not cache:
         hass.data.pop(DATA_SETUP_CACHE, None)
     return snapshot

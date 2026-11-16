@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any
 from urllib.parse import quote, urlparse
+from homeassistant.util.json import json_loads
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
@@ -20,6 +21,7 @@ from .const import (
 )
 
 REQUEST_TIMEOUT_SECONDS = 30
+BULK_REQUEST_TIMEOUT_SECONDS = 90
 DEFAULT_RATE_LIMIT_RETRY_SECONDS = 15 * 60
 
 
@@ -85,6 +87,7 @@ class GreenFluxApiClient:
         *,
         params: dict[str, Any] | None = None,
         json: dict[str, Any] | None = None,
+        timeout: float = REQUEST_TIMEOUT_SECONDS,
     ) -> Any:
         """Send one API request and normalize transport-level errors."""
         remaining = self._rate_limited_until - time.monotonic()
@@ -100,7 +103,7 @@ class GreenFluxApiClient:
             "Accept": "application/json",
         }
         try:
-            async with asyncio.timeout(REQUEST_TIMEOUT_SECONDS):
+            async with asyncio.timeout(timeout):
                 async with self._session.request(
                     method,
                     url,
@@ -132,7 +135,10 @@ class GreenFluxApiClient:
                         ) from err
                     if response.status == 204:
                         return None
-                    return await response.json(content_type=None)
+                    body = await response.read()
+                    if not body.strip():
+                        return None
+                    return await asyncio.to_thread(json_loads, body)
         except (
             GreenFluxAuthError,
             GreenFluxNotFoundError,
@@ -179,16 +185,22 @@ class GreenFluxApiClient:
         self._raise_for_application_error(data)
         return _unwrap_object(data)
 
-    async def async_get_charge_stations(self) -> list[dict[str, Any]]:
-        """Get all charge stations, following offset pagination where present."""
+    async def async_get_charge_stations(
+        self, *, date_from: datetime | None = None
+    ) -> list[dict[str, Any]]:
+        """Get a full snapshot or only stations updated since date_from."""
         stations: list[dict[str, Any]] = []
         offset = 0
         limit = CHARGE_STATION_LIMIT
         while True:
+            params: dict[str, Any] = {"offset": offset, "limit": limit}
+            if date_from is not None:
+                params["date_from"] = _iso(date_from)
             payload = await self._request(
                 "GET",
                 f"/api/{API_VERSION}/ChargeStations",
-                params={"offset": offset, "limit": limit},
+                params=params,
+                timeout=BULK_REQUEST_TIMEOUT_SECONDS,
             )
             self._raise_for_application_error(payload)
             page = _unwrap_list(payload)
