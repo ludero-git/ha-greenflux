@@ -57,13 +57,14 @@ class GreenFluxStationCoordinator(
         config_entry: ConfigEntry,
         api: GreenFluxApiClient,
         charger_ids: set[str],
+        update_interval: timedelta,
     ) -> None:
         super().__init__(
             hass,
             _LOGGER,
             config_entry=config_entry,
             name=f"{NAME} charge stations",
-            update_interval=STATION_UPDATE_INTERVAL,
+            update_interval=update_interval,
         )
         self.api = api
         self.charger_ids = charger_ids

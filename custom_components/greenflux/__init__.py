@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable
 from dataclasses import dataclass
+from datetime import timedelta
 from functools import partial
 import logging
 from typing import Any
@@ -24,8 +25,10 @@ from .const import (
     CONF_API_URL,
     CONF_CHARGER_ID,
     CONF_PLATFORM_NUMBER,
+    CONF_STATION_INTERVAL,
     DOMAIN,
     PLATFORMS,
+    STATION_UPDATE_INTERVAL,
     SUBENTRY_TYPE_CHARGER,
 )
 from .coordinator import (
@@ -63,6 +66,7 @@ class GreenFluxRuntimeData:
 
     api: GreenFluxApiClient
     station_coordinator: GreenFluxStationCoordinator
+    station_update_interval: timedelta
     notification_coordinator: GreenFluxNotificationCoordinator
     platform_device_id: str
     charger_device_ids: dict[str, str]
@@ -176,7 +180,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreenFluxConfigEntry) ->
         if subentry.subentry_type == SUBENTRY_TYPE_CHARGER
         and CONF_CHARGER_ID in subentry.data
     }
-    station_coordinator = GreenFluxStationCoordinator(hass, entry, api, charger_ids)
+    station_update_interval = timedelta(
+        minutes=int(
+            entry.data.get(
+                CONF_STATION_INTERVAL,
+                STATION_UPDATE_INTERVAL.total_seconds() // 60,
+            )
+        )
+    )
+    station_coordinator = GreenFluxStationCoordinator(
+        hass, entry, api, charger_ids, station_update_interval
+    )
     notification_coordinator = GreenFluxNotificationCoordinator(
         hass, entry, api, station_coordinator
     )
@@ -226,6 +240,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: GreenFluxConfigEntry) ->
     entry.runtime_data = GreenFluxRuntimeData(
         api=api,
         station_coordinator=station_coordinator,
+        station_update_interval=station_update_interval,
         notification_coordinator=notification_coordinator,
         platform_device_id=platform_device.id,
         charger_device_ids=charger_device_ids,

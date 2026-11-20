@@ -13,6 +13,7 @@ CONF_API_TOKEN = "api_token"
 CONF_AUTO_CREATE = "auto_create"
 CONF_CHARGER_ID = "charger_id"
 CONF_PLATFORM_NUMBER = "platform_number"
+CONF_STATION_INTERVAL = "station_interval"
 
 SUBENTRY_TYPE_CHARGER = "charger"
 

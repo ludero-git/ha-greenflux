@@ -18,6 +18,9 @@ from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     BooleanSelector,
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     TextSelector,
     TextSelectorConfig,
     TextSelectorType,
@@ -38,7 +41,9 @@ from .const import (
     CONF_AUTO_CREATE,
     CONF_CHARGER_ID,
     CONF_PLATFORM_NUMBER,
+    CONF_STATION_INTERVAL,
     DOMAIN,
+    STATION_UPDATE_INTERVAL,
     SUBENTRY_TYPE_CHARGER,
 )
 from .models import normalize_station, station_id
@@ -59,7 +64,6 @@ def _next_platform_number(entries: list[ConfigEntry]) -> int:
             if suffix.isdigit():
                 numbers.append(int(suffix))
     return max(numbers, default=0) + 1
-
 
 
 class GreenFluxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -133,6 +137,7 @@ class GreenFluxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_API_TOKEN: token,
                         CONF_AUTO_CREATE: user_input[CONF_AUTO_CREATE],
                         CONF_PLATFORM_NUMBER: platform_number,
+                        CONF_STATION_INTERVAL: int(user_input[CONF_STATION_INTERVAL]),
                     },
                     subentries=subentries,
                 )
@@ -144,6 +149,18 @@ class GreenFluxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
                 vol.Required(CONF_API_TOKEN): TextSelector(
                     TextSelectorConfig(type=TextSelectorType.PASSWORD)
+                ),
+                vol.Required(
+                    CONF_STATION_INTERVAL,
+                    default=int(STATION_UPDATE_INTERVAL.total_seconds() // 60)
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=1,
+                        max=1440,
+                        step=1,
+                        unit_of_measurement="minutes",
+                        mode=NumberSelectorMode.BOX
+                    )
                 ),
                 vol.Required(CONF_AUTO_CREATE, default=False): BooleanSelector(),
             }
